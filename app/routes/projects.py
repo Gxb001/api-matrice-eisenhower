@@ -3,10 +3,10 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app2 import db
-from app2.models.project import Project
-from app2.models.user_project import UserProject
-from app2.utils.decorators import admin_required
+from app import db
+from app.models.project import Project
+from app.models.user_project import UserProject
+from app.utils.decorators import admin_required
 
 projects_bp = Blueprint('projects', __name__)
 
