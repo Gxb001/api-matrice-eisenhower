@@ -131,6 +131,35 @@ def test_api():
             "Création tâche"
         )
 
+    # Étape : Supprimer une tâche
+    if project_id:
+        print("\n=== Création d'une tâche pour tester la suppression ===")
+        task_data = {
+            "name": "Test Task for Deletion",
+            "description": "A sample task to delete",
+            "urgency": "Urgent",
+            "importance": "Important",
+            "status": "À faire",
+            "plan_date": "2025-07-10",
+            "estimation": 5,
+            "estimation_unit": "heures",
+            "id_project": project_id
+        }
+        response = check_response(
+            session.post(f"{BASE_URL}/tasks", json=task_data, headers=headers),
+            "Création tâche pour suppression"
+        )
+        task_id = None
+        if response.status_code == 201:
+            task_id = response.json().get('id')
+
+        if task_id:
+            print("\n=== Suppression logique d'une tâche ===")
+            check_response(
+                session.delete(f"{BASE_URL}/tasks/{task_id}", headers=headers),
+                "Suppression tâche"
+            )
+
     # Étape 7 : Lister tous les projets de l'utilisateur
     print("\n=== Liste des projets de l'utilisateur ===")
     check_response(

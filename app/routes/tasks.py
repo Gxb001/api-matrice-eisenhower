@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -31,6 +33,23 @@ def create_task():
     db.session.add(task)
     db.session.commit()
     return jsonify({'id': task.id, 'name': task.name}), 201
+
+
+@tasks_bp.route('/tasks/<int:task_id>', methods=['DELETE'])
+@jwt_required()
+def delete_task(task_id):
+    user_id = get_jwt_identity()
+    task = Task.query.filter_by(id=task_id, deleted_at=None).first()
+    if not task:
+        return jsonify({'error': 'Task not found'}), 404
+    # Vérifier si l'utilisateur a accès à la tâche (soit via id_user, soit via UserProject)
+    if task.id_user != user_id:
+        user_project = UserProject.query.filter_by(id_user=user_id, id_project=task.id_project).first()
+        if not user_project:
+            return jsonify({'error': 'Unauthorized access to task'}), 403
+    task.deleted_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'message': 'Task deleted'}), 200
 
 
 @tasks_bp.route('/tasks/project/<int:project_id>', methods=['GET'])
