@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 
@@ -11,6 +12,8 @@ def create_app():
 
     db.init_app(app)
     jwt = JWTManager(app)
+
+    CORS(app)
 
     # Vérifier les erreurs de chargement du token
     @jwt.invalid_token_loader
