@@ -1,0 +1,163 @@
+### 1. Créer un utilisateur admin (pas besoin de token)
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+  "name_util": "admin1",
+  "password": "AdminPass123!",
+  "role": "admin"
+}
+
+### 2. Créer un utilisateur simple (pas besoin de token)
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+  "name_util": "user1",
+  "password": "UserPass123!",
+  "role": "util"
+}
+
+### 3. Se connecter en admin pour récupérer le token JWT
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "name_util": "admin1",
+  "password": "AdminPass123!"
+}
+
+### Copie la valeur "access_token" de la réponse et remplace <ADMIN_TOKEN> par ce token dans les requêtes suivantes
+
+### 4. Se connecter en user1 pour récupérer son token JWT
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "name_util": "user1",
+  "password": "UserPass123!"
+}
+
+### Copie le "access_token" et remplace <USER_TOKEN> dans les requêtes ci-dessous
+
+### 5. Admin récupère les infos de user1
+GET http://localhost:5000/users/2
+Authorization: Bearer <ADMIN_TOKEN>
+
+### 6. User1 essaie de récupérer ses propres infos (autorisé)
+GET http://localhost:5000/users/2
+Authorization: Bearer <USER_TOKEN>
+
+### 7. User1 essaie de récupérer les infos de admin1 (interdit)
+GET http://localhost:5000/users/1
+Authorization: Bearer <USER_TOKEN>
+
+### 8. Admin modifie user1
+PUT http://localhost:5000/users/2
+Authorization: Bearer <ADMIN_TOKEN>
+Content-Type: application/json
+
+{
+  "name_util": "user1_updated",
+  "role": "util"
+}
+
+### 9. User1 essaie de modifier admin1 (interdit)
+PUT http://localhost:5000/users/1
+Authorization: Bearer <USER_TOKEN>
+Content-Type: application/json
+
+{
+  "name_util": "hacker",
+  "role": "admin"
+}
+
+### 10. User1 crée une tâche pour lui-même
+POST http://localhost:5000/tasks
+Authorization: Bearer <USER_TOKEN>
+Content-Type: application/json
+
+{
+  "name": "Tâche user1",
+  "description": "Une tâche importante",
+  "urgency": "Urgent",
+  "importance": "Important",
+  "status": "À faire",
+  "plan_date": "2025-07-15",
+  "estimation": 3,
+  "estimation_unit": "heures",
+  "id_user": 2
+}
+
+### 11. User1 essaie de créer une tâche pour admin (interdit)
+POST http://localhost:5000/tasks
+Authorization: Bearer <USER_TOKEN>
+Content-Type: application/json
+
+{
+  "name": "Tâche admin non autorisée",
+  "description": "Impossible pour user",
+  "urgency": "Urgent",
+  "importance": "Important",
+  "status": "À faire",
+  "plan_date": "2025-07-15",
+  "estimation": 2,
+  "estimation_unit": "heures",
+  "id_user": 1
+}
+
+### 12. Admin crée une tâche pour user1
+POST http://localhost:5000/tasks
+Authorization: Bearer <ADMIN_TOKEN>
+Content-Type: application/json
+
+{
+  "name": "Tâche admin pour user1",
+  "description": "Créée par admin",
+  "urgency": "Non Urgent",
+  "importance": "Important",
+  "status": "Planifié",
+  "plan_date": "2025-07-20",
+  "estimation": 5,
+  "estimation_unit": "jours",
+  "id_user": 2
+}
+
+### 13. User1 récupère ses tâches
+GET http://localhost:5000/tasks/2
+Authorization: Bearer <USER_TOKEN>
+
+### 14. Admin récupère toutes les tâches de user1
+GET http://localhost:5000/tasks/2
+Authorization: Bearer <ADMIN_TOKEN>
+
+### 15. User1 modifie sa tâche (remplace <TASK_ID> par l’id renvoyé dans création tâche)
+PUT http://localhost:5000/tasks/<TASK_ID>
+Authorization: Bearer <USER_TOKEN>
+Content-Type: application/json
+
+{
+  "name": "Tâche user1 modifiée",
+  "description": "Description mise à jour",
+  "urgency": "Urgent",
+  "importance": "Important",
+  "status": "En cours",
+  "plan_date": "2025-07-16",
+  "estimation": 4
+}
+
+### 16. User1 supprime sa tâche
+DELETE http://localhost:5000/tasks/<TASK_ID>
+Authorization: Bearer <USER_TOKEN>
+
+### 17. Admin restaure la tâche supprimée
+PATCH http://localhost:5000/tasks/<TASK_ID>/restore
+Authorization: Bearer <ADMIN_TOKEN>
+
+### 18. Admin supprime logiquement user1
+DELETE http://localhost:5000/users/2
+Authorization: Bearer <ADMIN_TOKEN>
+
+### 19. Admin restaure user1
+PATCH http://localhost:5000/users/2/restore
+Authorization: Bearer <ADMIN_TOKEN>

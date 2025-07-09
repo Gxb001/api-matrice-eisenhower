@@ -1,0 +1,115 @@
+### Register a new user
+POST http://localhost:5000/api/register
+Content-Type: application/json
+
+{
+  "name_util": "testuser",
+  "password": "password123",
+  "role": "util"
+}
+
+### Register an admin user
+POST http://localhost:5000/api/register
+Content-Type: application/json
+
+{
+  "name_util": "adminuser",
+  "password": "admin123",
+  "role": "admin"
+}
+
+### Login to get JWT token (replace name_util and password with registered user)
+POST http://localhost:5000/api/login
+Content-Type: application/json
+
+{
+  "name_util": "testuser",
+  "password": "password123"
+}
+
+### Create a project (requires admin JWT token)
+POST http://localhost:5000/api/projects
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+
+{
+  "name": "Project Alpha",
+  "description": "A test project for Eisenhower Matrix"
+}
+
+### List all projects for the current user
+GET http://localhost:5000/api/projects
+Authorization: Bearer <JWT_TOKEN>
+
+### Get specific project details (replace <PROJECT_ID>)
+GET http://localhost:5000/api/projects/<PROJECT_ID>
+Authorization: Bearer <JWT_TOKEN>
+
+### Update a project (requires admin JWT token, replace <PROJECT_ID>)
+PUT http://localhost:5000/api/projects/<PROJECT_ID>
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+
+{
+  "name": "Updated Project Alpha",
+  "description": "Updated description"
+}
+
+### Delete a project logically (requires admin JWT token, replace <PROJECT_ID>)
+DELETE http://localhost:5000/api/projects/<PROJECT_ID>
+Authorization: Bearer <JWT_TOKEN>
+
+### Restore a deleted project (requires admin JWT token, replace <PROJECT_ID>)
+PATCH http://localhost:5000/api/projects/<PROJECT_ID>/restore
+Authorization: Bearer <JWT_TOKEN>
+
+#### Associate a user to a project (requires admin JWT token)
+#POST http://localhost:5000/api/user-projects
+#Content-Type: application/json
+#Authorization: Bearer <JWT_TOKEN>
+#
+#{
+#  "id_user": <USER_ID>,
+#  "id_project": <PROJECT_ID>
+#}
+
+### Remove a user from a project (requires admin JWT token, replace <USER_ID> and <PROJECT_ID>)
+DELETE http://localhost:5000/api/user-projects/<USER_ID>/<PROJECT_ID>
+Authorization: Bearer <JWT_TOKEN>
+
+### List projects for a specific user (replace <USER_ID>)
+GET http://localhost:5000/api/users/<USER_ID>/projects
+Authorization: Bearer <JWT_TOKEN>
+
+### Get tasks for a specific project (replace <PROJECT_ID>)
+GET http://localhost:5000/api/tasks/project/<PROJECT_ID>
+Authorization: Bearer <JWT_TOKEN>
+
+### Get tasks by Eisenhower Matrix quadrants for a user (replace <USER_ID>)
+GET http://localhost:5000/api/tasks/matrix/<USER_ID>
+Authorization: Bearer <JWT_TOKEN>
+
+### Filter tasks with custom parameters (example with status and urgency)
+GET http://localhost:5000/api/tasks/filter?status=En%20cours&urgency=Urgent
+Authorization: Bearer <JWT_TOKEN>
+
+### List all users (requires admin JWT token)
+GET http://localhost:5000/api/users
+Authorization: Bearer <JWT_TOKEN>
+
+### Update user role (requires admin JWT token, replace <USER_ID>)
+PATCH http://localhost:5000/api/users/<USER_ID>/role
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+
+{
+  "role": "admin"
+}
+
+### Get task statistics for a user (replace <USER_ID>)
+GET http://localhost:5000/api/tasks/stats/<USER_ID>
+Authorization: Bearer <JWT_TOKEN>
+
+### Get task statistics for a project (replace <PROJECT_ID>)
+GET http://localhost:5000/api/projects/<PROJECT_ID>/stats
+Authorization: Bearer <JWT_TOKEN>
